@@ -5,9 +5,11 @@ from TubeKit import YouTubeClient
 import random
 import string
 import time
+from idk import APIKEY # Here I import the API KEY from this file not accessible from the repo, so you need to comment these lines and put your API KEY that you get from here: https://console.developers.google.com/?hl=en-US and from the YouTube Data API v3
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
 
 @dataclass
 class MySQLConfig:
@@ -18,7 +20,7 @@ class MySQLConfig:
     database: str = "music"
 
 config = MySQLConfig()
-client = YouTubeClient('YOUR_API_KEY')
+client = YouTubeClient(APIKEY) # Here also remember to replace with the correct API key
 
 def testconnetion():
     try:
@@ -54,12 +56,12 @@ def register():
     else:
         return render_template('signup.html')
     
-app.route('/logout')
+@app.route('/logout')
 def logout():
     session.pop('user_id', None)
     return redirect('/login')
 
-@app.route('login_validation', methods=['POST'])
+@app.route('/login_validation', methods=['POST'])
 def login_validation():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -71,10 +73,10 @@ def login_validation():
     )
 
     cursor = connection.cursor()
-    cursor.execute(f"SELECT * FROM 'users' WHERE 'email' = %s AND 'password' = %s""", (email, password))
+    cursor.execute(f"SELECT * FROM users WHERE email = %s AND password = %s""", (email, password))
     user = cursor.fetchone()
     if user: 
-        session['user_id'] = user[0]
+        session['user_id'] = user[1]
         cursor.close()
         return redirect('/')
     else: 
@@ -82,14 +84,24 @@ def login_validation():
         cursor.close()
         return redirect('/login')
 
-@app.route('add_user', methods=['POST'])
+@app.route('/add_user', methods=['POST'])
 def add_user():
     name = request.form.get('name')
     email = request.form.get('email')
-    pno = request.form.get('fullPhoneNumber')
+    pno = request.form.get('pno')
     password = request.form.get('password')
     gender = request.form.get('gender')
     user_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+    # Imprimir cada campo individualmente para debug
+    print("\n=== Individual Fields ===")
+    print(f"Name: {name}")
+    print(f"Email: {email}")
+    print(f"Phone Number: {pno}")
+    print(f"Password: {password}")
+    print(f"Gender: {gender}")
+    print(f"Generated User ID: {user_id}")
+    print("===========================\n")
 
     connection = MySQLdb.connect(
         host=config.host,
@@ -99,12 +111,14 @@ def add_user():
     )
     cursor = connection.cursor()
     try:
-        cursor.execute(f""" INSERT INTO 'users' ('name', 'email', 'pno', 'password', 'user_id', 'gender') VALUES(%s, %s, %s, %s, %s, %s)""", (name, email, pno, password, user_id, gender))
+        cursor.execute(f""" INSERT INTO users (name, email, pno, password, user_id, gender) VALUES(%s, %s, %s, %s, %s, %s)""", (name, email, pno, password, user_id, gender))
         connection.commit()
+        print(f"User {name} added successfully")
         flash('Account created successfully', 'success')
         time.sleep(3)
     except Exception as e:
         connection.rollback()
+        print(f"Error adding user: {str(e)}")
         flash('Something went wrong, Please try again', 'error')
         return redirect('/register')
     finally:
@@ -114,5 +128,11 @@ def add_user():
 
 @app.route('/')
 def index():
-    pass
+    if 'user_id' in session:
+        return render_template('base.html')
+    else:
+        return redirect('/login')
 
+
+if __name__ == '__main__':
+    app.run(debug=True)

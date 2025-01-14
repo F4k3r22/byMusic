@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="icon" href="/static/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #000000;
+        }
+        
+        .spotify-green {
+            background-color: #1DB954;
+        }
+        
+        .spotify-green:hover {
+            background-color: #1ed760;
+            transform: scale(1.02);
+        }
+
+        .social-btn {
+            border: 1px solid #727272;
+            transition: border-color 0.3s;
+        }
+
+        .social-btn:hover {
+            border-color: #ffffff;
+        }
+
+        .input-field {
+            background-color: #121212;
+            border: 1px solid #727272;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #ffffff;
+            outline: none;
+        }
+
+        .green-link {
+            color: #1DB954;
+            transition: color 0.3s;
+        }
+
+        .green-link:hover {
+            color: #1ed760;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo Area -->
+        <div class="text-center mb-10">
+            <h1 class="text-[#1DB954] text-4xl font-bold">byMusic</h1>
+        </div>
+
+        <!-- Login Form -->
+        <form action="/login_validation" method="post" class="space-y-6">
+            <!-- Input Fields -->
+            <div class="space-y-4">
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="Email"
+                    class="w-full px-4 py-3 rounded-md input-field text-white"
+                />
+                
+                <input
+                    type="password"
+                    name="password"
+                    required
+                    placeholder="Password"
+                    class="w-full px-4 py-3 rounded-md input-field text-white"
+                />
+
+                <div class="text-right">
+                    <a href="/forgot_password" class="text-sm text-gray-400 hover:text-white transition-colors">
+                        Forgot password?
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sign In Button -->
+            <button
+                type="submit"
+                class="w-full py-3 rounded-full spotify-green font-bold transition-all duration-200"
+            >
+                Sign In
+            </button>
+
+
+            <!-- Sign Up Link -->
+            <div class="text-center mt-8">
+                <span class="text-gray-400">Don't have an account?</span>
+                <a href="/register" class="green-link ml-2 font-bold">
+                    Sign up
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Alert Container -->
+    <div class="fixed top-4 right-4 z-50 max-w-md w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="bg-black/90 border border-gray-800 rounded-lg p-4 mb-4 flex items-center justify-between">
+                        <span class="text-{% if category == 'success' %}green{% else %}red{% endif %}-400">{{ message }}</span>
+                        <button type="button" class="text-gray-400 hover:text-white" onclick="this.parentElement.remove()">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="/static/JS/login.js"></script>
+</body>
+</html>

@@ -21,3 +21,19 @@ The code will be available for personal and educational use.
 
 ### 💼 Commercial License:
 If you want to implement it commercially, contact me at: riveraaai200678@gmail.com
+
+## 🛢️ DB
+In the future I will add a sql file with the database schema but for now I have only created the 'users' table like this:
+
+```sql
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(10) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    pno VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    gender VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
